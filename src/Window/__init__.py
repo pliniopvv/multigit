@@ -1,24 +1,35 @@
-import sys
-from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from Window.Screens.ListRepository import ListRepository
+from pystray import Icon, Menu, MenuItem as Item
+from PIL import Image
+import pystray
+
+__ICON = None
+__ITEMS = []
+
+def close():
+    __ICON.stop()
+
+def makeSystemTray():
+    def IconImage():
+        image = Image.open('src/icon.png')
+        return image
+
+    icon = pystray.Icon(
+        'test name',
+        icon=IconImage(),
+        menu=tuple(__ITEMS))
+
+    return icon
+
+def makeItem(title, action):
+    __ITEMS.append(Item(
+            title,
+            lambda : action()
+    ))
+
+def startSystemTray():
+    makeItem('Repositórios', ListRepository)
+    makeItem('Sair', close)
+    makeSystemTray().run()
 
 
-class GUI(QMainWindow):
-    def __init__(self, path):
-        super().__init__(None)
-        self.path = path
-        self.ui = uic.loadUi("Window/screens/" + path, self)
-        self._build()
-        self.ui.show()
-        # self.actionSingle_Archive.triggered.connect(self.archive)
-
-    # def archive(self):
-    #     self.window = QtWidgets.QMainWindow()
-    #     uic.loadUi(self.path)
-    #     self.window.show()
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    win = GUI()
-    win.show()
-    sys.exit(app.exec())
