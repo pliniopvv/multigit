@@ -27,13 +27,18 @@ class Configuration():
         file.close()
         pass
 
+    def removeRepositorio(self, repo):
+        if (repo in self.repo):
+            self.repo.remove(repo)
+            self.service.remove_option('repositorios', repo.name)
+            self._save()
 
     def getRepositorios(self):
         if ('repo' in dir(self)):
             return self.repo
         return []
 
-    def setRepositorio(self, repository):
+    def addRepositorio(self, repository):
         if not isinstance(repository, Repository): raise TypeError("Tipo não é um Repository!")
 
         if ('repo' in dir(self)):

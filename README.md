@@ -3,4 +3,5 @@
 
 
 ## Bugfix:
-- [ ] Corrigir bug ao fechar janelas do Tkinter.
+- [x] Corrigir bug ao fechar janelas do Tkinter.
+- [ ] Corrigir 'path' não sendo exibido na modal AddRepository();
