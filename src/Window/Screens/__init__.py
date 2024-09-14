@@ -31,13 +31,22 @@ class MainWindow:
         self._update(size)
 
     def __init__(self, size = None):
-        self._update(size)
+        if (size != None):
+            self._update(size)
+            self.size = size
+        elif ('size' in dir(self)):
+            self._update(self.size)
+        else:
+            self._update()
 
     def _update(self, size = None):
         app = Tk()
         app.title("Repositórios configurados")
         if (size != None):
             app.geometry(size)
+            self.size = size
+        elif ('size' in dir(self)):
+            app.geometry(self.size)
         self.win = app
         
         self._build()
@@ -79,12 +88,12 @@ class ListRepository(MainWindow):
 
         button_del = Button(app, text="Excluir", command=self.del_repository)
         button_del.pack(fill=['x'])
-
         pass
 
     def add_repository(self):
         def save_repo(repo):
             Kernel.config.addRepositorio(repo)
+            self._reupdate()
         self.modal = AddRepository(lambda repo: save_repo(repo))
 
     def del_repository(self):
@@ -119,28 +128,33 @@ class AddRepository(MainWindow):
         labelRootRepo = Label(app, text="Root do repositório:")
         labelRootRepo.pack(pady=5, padx=5)
 
-        entry_root = StringVar()
-        self.input['chooser'] = entry_root
-        RootRepo = Entry(app, width=65, state='disabled', textvariable=entry_root)
+        self.view['chooser'] = StringVar()
+        RootRepo = Entry(app, width=65, textvariable=self.view['chooser'])
         RootRepo.pack(pady=5, padx=5)
+
+        self.campoPath = RootRepo
 
         buttonSave = Button(app, text="Ok", command=self.save)
         buttonSave.pack(fill=['x'])
 
-        buttonFChooser = Button(app, text="Selecionar", command=lambda : self.fchooser(lambda directory: entry_root.set(directory)))
+        buttonFChooser = Button(app, text="Selecionar", command = lambda : self.fchooser())
         buttonFChooser.pack(fill=['x'])
 
         self.input['nome'] = nome
-        self.input['path'] = entry_root
+        self.input['path'] = self.view['chooser']
 
-    def fchooser(self, onFinish):
+        # self.win.bind('<<event1>>', set_text)
+
+    def fchooser(self):
         directory = filedialog.askdirectory()
-        onFinish(directory)
-        self.win.update()
+        self.campoPath.delete(0, END)
+        self.campoPath.insert(0, directory)
+        # self.win.event_generate('<<event1>>', when='tail')
 
     def save(self):
         nome = self.input['nome'].get()
         path = self.input['path'].get()
         repo = Repository(nome, path)
+        self.win.destroy()
         self.onClose(repo)
         pass
