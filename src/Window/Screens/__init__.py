@@ -153,7 +153,7 @@ class AddRepository(MainWindow):
 
     def save(self):
         nome = self.input['nome'].get()
-        path = self.input['path'].get()
+        path = self.campoPath.get()
         repo = Repository(nome, path)
         self.win.destroy()
         self.onClose(repo)
